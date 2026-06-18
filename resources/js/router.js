@@ -10,12 +10,29 @@ const routes = [
         component: () => import("./Pages/Login.vue"),
     },
     {
-        path: "/test",
-        component: () => import("./Pages/TestRoute.vue"),
+        path: "/dashboard",
+        component: () => import("./Pages/Dashboard.vue"),
+        meta: {
+            requiresAuth: true,
+        },
     },
 ];
 
-export default createRouter({
+const router = createRouter({
     history: createWebHistory(),
     routes,
 });
+
+router.beforeEach((to, from) => {
+    const token = localStorage.getItem("token");
+
+    if (to.meta.requiresAuth && !token) {
+        return "/login";
+    }
+
+    if (to.path === "/login" && token) {
+        return "/dashboard";
+    }
+});
+
+export default router;
