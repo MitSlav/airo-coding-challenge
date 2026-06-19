@@ -15,13 +15,12 @@
                 <TextField name="password" label="Password" type="password" />
 
                 <div>
-                    <button
+                    <Button
                         type="submit"
-                        :disabled="isSubmitting"
+                        :is-submitting="isSubmitting"
+                        button-label="Sign In"
                         class="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                    >
-                        {{ isSubmitting ? "Signing In..." : "Sign In" }}
-                    </button>
+                    />
                 </div>
             </form>
         </div>
@@ -33,6 +32,7 @@ import { useForm } from "vee-validate";
 import { object, string } from "yup";
 import TextField from "../components/shared/forms/TextField.vue";
 import axios from "axios";
+import Button from "../components/shared/Button.vue";
 
 const validationSchema = object({
     email: string().email("Invalid email").required("Email is required"),
@@ -46,12 +46,10 @@ const { handleSubmit, errors, isSubmitting } = useForm({
 const onSubmit = handleSubmit(async (values, { setFieldError }) => {
     try {
         const response = await axios.post("/api/login", values);
-        console.log(response.data);
+        localStorage.setItem("token", response.data.token);
+        window.location.href = "/dashboard";
     } catch (error) {
-        console.error(error);
         setFieldError("email", error.response.data.errors.email);
-    } finally {
-        console.log("Request completed");
     }
 });
 </script>
