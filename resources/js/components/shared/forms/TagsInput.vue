@@ -1,5 +1,4 @@
-<script setup lang="ts">
-import { ref } from "vue";
+<script setup>
 import {
     TagsInputInput,
     TagsInputItem,
@@ -11,25 +10,20 @@ import { Icon } from "@iconify/vue";
 import { useField } from "vee-validate";
 
 const props = defineProps({
-    type: { type: String, default: "text" },
     name: String,
     label: String,
+    initialValue: Array
 });
 
 const { value, errorMessage, handleChange, handleBlur } = useField(
     () => props.name,
     undefined,
     {
-        validateOnValueUpdate: false,
-        initialValue: [28, 35],
+        validateOnValueUpdate: true,
+        validateOnBlur: true,
+        initialValue: props.initialValue,
     },
 );
-
-const validationListeners = {
-    blur: (evt) => handleBlur(evt, true),
-    change: handleChange,
-    input: (evt) => handleChange(evt, !!errorMessage.value),
-};
 </script>
 
 <template>
@@ -41,16 +35,16 @@ const validationListeners = {
         <div class="mt-2">
             <TagsInputRoot
                 :id="name"
-                :type="type"
                 v-model="value"
                 @blur="handleBlur"
-                class="w-full rounded-md bg-white p-1 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-indigo-600 sm:text-sm/6 flex flex-wrap gap-2"
+                @change="handleChange"
+                class="w-full rounded-md bg-white p-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-indigo-600 sm:text-sm/6 flex flex-wrap gap-2"
             >
                 <TagsInputItem
                     v-for="item in value"
                     :key="item"
                     :value="item"
-                    class="inline-flex items-center gap-1 rounded-md bg-indigo-100 px-2 py-1 text-sm text-indigo-700"
+                    class="inline-flex items-center gap-1 rounded-md bg-indigo-100 px-2 py-0.75 text-sm text-indigo-700"
                 >
                     <TagsInputItemText />
 
