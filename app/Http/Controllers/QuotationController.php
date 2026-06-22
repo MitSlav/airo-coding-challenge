@@ -2,16 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Actions\CalculateQuotation;
 use App\Http\Requests\QuotationRequest;
 
 class QuotationController extends Controller
 {
-    /**
-     * Provision a new web server.
-     */
-    public function __invoke(QuotationRequest $request)
+    public function __invoke(QuotationRequest $request, CalculateQuotation $action)
     {
         $data = $request->validated();
-        // dd($data);
+
+        $total = $action->execute($data);
+
+        return response()->json([
+            'total' => number_format($total, 2, '.', ''),
+        ]);
     }
 }

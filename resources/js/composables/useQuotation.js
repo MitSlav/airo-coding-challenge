@@ -2,6 +2,7 @@ import { useForm } from "vee-validate";
 import { array, date, number, object, string } from "yup";
 import axios from "axios";
 import axiosInstance from "../services/axiosInstance.js";
+import { ref } from "vue";
 
 export const validOptions = ["EUR", "GBP", "USD"];
 const validationSchema = object({
@@ -35,6 +36,8 @@ const validationSchema = object({
 });
 
 export const useQuotation = () => {
+    const total = ref();
+
     const { handleSubmit, errors, isSubmitting, resetForm } = useForm({
         validationSchema,
     });
@@ -43,6 +46,7 @@ export const useQuotation = () => {
         const data = { ...values, age: values.age.join() };
         try {
             const response = await axiosInstance.post("/quotation", data);
+            total.value = response.data.total;
             resetForm();
         } catch (error) {
             setFieldError("age", error.response?.data?.errors?.age);
@@ -55,6 +59,7 @@ export const useQuotation = () => {
     return {
         errors,
         isSubmitting,
+        total,
         onSubmit,
     };
 };

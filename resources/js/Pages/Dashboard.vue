@@ -5,7 +5,7 @@ import TagsInput from "../components/shared/forms/TagsInput.vue";
 import TextField from "../components/shared/forms/TextField.vue";
 import { useQuotation, validOptions } from "../composables/useQuotation.js";
 
-const { isSubmitting, onSubmit } = useQuotation();
+const { isSubmitting, total, onSubmit } = useQuotation();
 </script>
 
 <template>
@@ -68,5 +68,7 @@ const { isSubmitting, onSubmit } = useQuotation();
                 />
             </div>
         </form>
+
+        <div v-if="total">Total is: {{ total }}</div>
     </div>
 </template>
