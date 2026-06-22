@@ -1,4 +1,5 @@
 import axios from "axios";
+import iziToast from "izitoast";
 
 const baseURL = import.meta.env.VITE_API_URL;
 
@@ -38,6 +39,12 @@ axiosInstance.interceptors.response.use(
     async function (error) {
         const originalRequest = error.config;
 
+        // Let forms handle validation errors
+        if (error.response?.status === 422) {
+            return Promise.reject(error);
+        }
+
+        // Refresh token flow
         if (
             error.response?.status === 401 &&
             !originalRequest._retry &&
@@ -58,12 +65,54 @@ axiosInstance.interceptors.response.use(
                     return axiosInstance(originalRequest);
                 }
             } catch (error) {
-                localStorage.removeItem('token');
+                localStorage.removeItem("token");
 
-                window.location.href = '/login';
+                window.location.href = "/login";
 
                 return Promise.reject(error);
             }
+        }
+
+        // Global error handling
+        const status = error.response?.status;
+
+        switch (status) {
+            case 403:
+                iziToast.error({
+                    title: "Forbidden",
+                    message:
+                        "You do not have permission to perform this action.",
+                });
+                break;
+
+            case 404:
+                iziToast.error({
+                    title: "Not Found",
+                    message: "The requested resource could not be found.",
+                });
+                break;
+
+            case 500:
+                iziToast.error({
+                    title: "Server Error",
+                    message: "An unexpected server error occurred.",
+                });
+                break;
+
+            default:
+                if (!error.response) {
+                    iziToast.error({
+                        title: "Network Error",
+                        message: "Unable to connect to the server.",
+                    });
+                } else {
+                    iziToast.error({
+                        title: "Error",
+                        message:
+                            error.response?.data?.message ??
+                            "Something went wrong.",
+                    });
+                }
         }
 
         return Promise.reject(error);

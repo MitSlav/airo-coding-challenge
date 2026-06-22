@@ -1,8 +1,11 @@
 <script setup>
 import { useForm } from "vee-validate";
 import { object, string } from "yup";
-import TextField from "../components/shared/forms/TextField.vue";
 import axios from "axios";
+import router from "../router.js";
+import iziToast from "izitoast";
+
+import TextField from "../components/shared/forms/TextField.vue";
 import Button from "../components/shared/Button.vue";
 
 const validationSchema = object({
@@ -18,7 +21,11 @@ const onSubmit = handleSubmit(async (values, { setFieldError }) => {
     try {
         const response = await axios.post("/api/login", values);
         localStorage.setItem("token", response.data.token);
-        window.location.href = "/dashboard";
+        iziToast.success({
+            title: "Success!",
+            message: "User logged in!",
+        });
+        router.push("/dashboard");
     } catch (error) {
         setFieldError("email", error.response?.data?.errors?.email);
     }
