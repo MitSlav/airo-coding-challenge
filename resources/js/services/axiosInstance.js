@@ -1,11 +1,9 @@
 import axios from "axios";
 import iziToast from "izitoast";
 
-const baseURL = import.meta.env.VITE_API_URL;
-
 //creating an axios instance
 const axiosInstance = axios.create({
-    baseURL,
+    baseURL: '/api',
     withCredentials: true, // This attaches cookies (e.g., refresh token) to the request
 });
 
