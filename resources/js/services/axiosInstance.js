@@ -39,16 +39,15 @@ axiosInstance.interceptors.response.use(
         const originalRequest = error.config;
 
         if (
-            error.response &&
-            error.response.status === 403 &&
-            !originalRequest._retry
+            error.response?.status === 401 &&
+            !originalRequest._retry &&
+            originalRequest.url !== "/refresh"
         ) {
             originalRequest._retry = true;
 
             try {
-                const response = await axios.get(`${baseURL}/refresh`, {
-                    withCredentials: true, // This attaches cookies (e.g., refresh token) to the request
-                });
+                const response = await axiosInstance.post("/refresh");
+
                 if (response) {
                     //update the access token
                     localStorage.setItem("token", response.data.token);
@@ -59,7 +58,11 @@ axiosInstance.interceptors.response.use(
                     return axiosInstance(originalRequest);
                 }
             } catch (error) {
-                // console.error('Error fetching data:', error);
+                localStorage.removeItem('token');
+
+                window.location.href = '/login';
+
+                return Promise.reject(error);
             }
         }
 
