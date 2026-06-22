@@ -1,3 +1,30 @@
+<script setup>
+import { useForm } from "vee-validate";
+import { object, string } from "yup";
+import TextField from "../components/shared/forms/TextField.vue";
+import axios from "axios";
+import Button from "../components/shared/Button.vue";
+
+const validationSchema = object({
+    email: string().email("Invalid email").required("Email is required"),
+    password: string().required("Password is required"),
+});
+
+const { handleSubmit, errors, isSubmitting } = useForm({
+    validationSchema,
+});
+
+const onSubmit = handleSubmit(async (values, { setFieldError }) => {
+    try {
+        const response = await axios.post("/api/login", values);
+        localStorage.setItem("token", response.data.token);
+        window.location.href = "/dashboard";
+    } catch (error) {
+        setFieldError("email", error.response?.data?.errors?.email);
+    }
+});
+</script>
+
 <template>
     <div class="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
         <div class="sm:mx-auto sm:w-full sm:max-w-sm">
@@ -26,30 +53,3 @@
         </div>
     </div>
 </template>
-
-<script setup>
-import { useForm } from "vee-validate";
-import { object, string } from "yup";
-import TextField from "../components/shared/forms/TextField.vue";
-import axios from "axios";
-import Button from "../components/shared/Button.vue";
-
-const validationSchema = object({
-    email: string().email("Invalid email").required("Email is required"),
-    password: string().required("Password is required"),
-});
-
-const { handleSubmit, errors, isSubmitting } = useForm({
-    validationSchema,
-});
-
-const onSubmit = handleSubmit(async (values, { setFieldError }) => {
-    try {
-        const response = await axios.post("/api/login", values);
-        localStorage.setItem("token", response.data.token);
-        window.location.href = "/dashboard";
-    } catch (error) {
-        setFieldError("email", error.response.data.errors.email);
-    }
-});
-</script>
