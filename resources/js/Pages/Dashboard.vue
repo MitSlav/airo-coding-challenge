@@ -4,6 +4,7 @@ import SelectField from "../components/shared/forms/SelectField.vue";
 import TagsInput from "../components/shared/forms/TagsInput.vue";
 import TextField from "../components/shared/forms/TextField.vue";
 import { useQuotation, validOptions } from "../composables/useQuotation.js";
+import Logout from "./Logout.vue";
 
 const { isSubmitting, total, onSubmit } = useQuotation();
 </script>
@@ -13,9 +14,13 @@ const { isSubmitting, total, onSubmit } = useQuotation();
         <form @submit.prevent="onSubmit" novalidate>
             <div class="space-y-12">
                 <div class="border-b border-gray-900/10 pb-12">
-                    <h2 class="text-base/7 font-semibold text-gray-900">
-                        Quotation
-                    </h2>
+                    <div class="flex justify-between">
+                        <h2 class="text-base/7 font-semibold text-gray-900">
+                            Quotation
+                        </h2>
+
+                        <Logout />
+                    </div>
 
                     <div
                         class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6"

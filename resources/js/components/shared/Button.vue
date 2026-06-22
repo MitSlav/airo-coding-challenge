@@ -1,5 +1,5 @@
 <template>
-    <button :type :disabled="isSubmitting">
+    <button :type :disabled="isSubmitting" class="cursor-pointer">
         {{ isSubmitting ? "Submitting..." : buttonLabel }}
     </button>
 </template>
