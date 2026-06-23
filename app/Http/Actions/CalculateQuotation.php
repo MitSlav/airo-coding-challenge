@@ -6,6 +6,17 @@ use DateTime;
 
 class CalculateQuotation
 {
+    private array $ageLookup = [];
+
+    public function __construct()
+    {
+        foreach (config('age-load') as $row) {
+            for ($i = $row['min']; $i <= $row['max']; $i++) {
+                $this->ageLookup[$i] = $row['load'];
+            }
+        }
+    }
+
     public function execute(array $data): float
     {
         $ages = $data['age'];
@@ -18,17 +29,9 @@ class CalculateQuotation
         $fixedRate = 3;
 
         return collect($ages)->sum(function ($age) use ($days, $fixedRate) {
-            $ageLoad = $this->getAgeLoad($age);
+            $ageLoad = $this->ageLookup[$age];
 
             return $fixedRate * $ageLoad * $days;
         });
-    }
-
-    private function getAgeLoad(int $age): float
-    {
-        return collect(config('age-load'))
-            ->first(function ($row) use ($age) {
-                return $age >= $row['min'] && $age <= $row['max'];
-            })['load'];
     }
 }
